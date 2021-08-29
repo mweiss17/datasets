@@ -3,6 +3,7 @@
 
 import gzip
 import json
+import gcsfs
 
 import datasets
 
@@ -40,7 +41,9 @@ _N_SHARDS_PER_SPLIT = {
     "en.noclean": {"train": 7168, "validation": 64},
 }
 
-_DATA_URL = "https://huggingface.co/datasets/allenai/c4/resolve/1ddc917116b730e1859edef32896ec5c16be51d0/{name}/c4-{split}.{index:05d}-of-{n_shards:05d}.json.gz"
+#_DATA_URL = "https://huggingface.co/datasets/allenai/c4/resolve/1ddc917116b730e1859edef32896ec5c16be51d0/{name}/c4-{split}.{index:05d}-of-{n_shards:05d}.json.gz"
+#_DATA_URL = "https://storage.googleapis.com/c4-datasets/c4/{name}/3.0.1/c4-{split}.{index:05d}-of-{n_shards:05d}.json.gz"
+_DATA_URL = "gcs://c4-datasets/c4/{name}/3.0.1/c4-{split}.{index:05d}-of-{n_shards:05d}.json.gz"
 
 
 class C4(datasets.GeneratorBasedBuilder):
@@ -82,10 +85,13 @@ class C4(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, filepaths):
         """This function returns the examples in the raw (text) form by iterating on all the files."""
+        fs = gcsfs.GCSFileSystem(project='must-318416')
+
         id_ = 0
         for filepath in filepaths:
             logger.info("generating examples from = %s", filepath)
-            with gzip.open(open(filepath, "rb"), "rt", encoding="utf-8") as f:
+            #with gzip.open(open(filepath, "rb"), "rt", encoding="utf-8") as f:
+            with gzip.open(fs.open(filepath, "rb"), "rt", encoding="utf-8") as f:
                 for line in f:
                     if line:
                         example = json.loads(line)
