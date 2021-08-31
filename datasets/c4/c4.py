@@ -86,7 +86,6 @@ class C4(datasets.GeneratorBasedBuilder):
     def _generate_examples(self, filepaths):
         """This function returns the examples in the raw (text) form by iterating on all the files."""
         fs = gcsfs.GCSFileSystem(project='must-318416')
-
         id_ = 0
         for filepath in filepaths:
             logger.info("generating examples from = %s", filepath)

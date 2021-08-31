@@ -189,8 +189,7 @@ class DownloadManager:
         # Default to using 16 parallel thread for downloading
         # Note that if we have less than 16 files, multi-processing is not activated
         if download_config.num_proc is None:
-            download_config.num_proc = 16
-
+            download_config.num_proc = 32
         download_func = partial(self._download, download_config=download_config)
 
         start_time = datetime.now()
